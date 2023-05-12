@@ -1,23 +1,25 @@
 package main;
 
 import javax.swing.JPanel;
-
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import entity.Player;
 
 public class GamePanel extends JPanel implements Runnable {
 	
-	final int sprite_size = 64;								// height and width need to be the same
+	public final int sprite_size = 64;								// height and width need to be the same
 	boolean running = false;
 	final int screen_height = 900;
 	final int screen_width = 1400;
 	final int FPS = 500;
 	int playerX = 0, playerY = 0, playerSpeed = 1;
+	boolean GameExit = false;								// for closing the game
 	
 	KeyHandler keyHandler = new KeyHandler();
 	Thread gameThread;
+	Player player = new Player(this, keyHandler);
 	
 	
 	public GamePanel() {
@@ -75,6 +77,10 @@ public class GamePanel extends JPanel implements Runnable {
 				timer = 0;
 				drawCount = 0;
 			}
+			
+			if (GameExit == true) {
+				GameClose();
+			}
 
 			
 		}
@@ -83,18 +89,11 @@ public class GamePanel extends JPanel implements Runnable {
 	
 	public void update() {
 		
-		if(keyHandler.upPressed == true) {
-			playerY -= playerSpeed;
+		player.update();		
+
+		if(keyHandler.ESCPressed == true) {
+			GameExit = true;
 		}
-		if(keyHandler.downPressed == true) {
-			playerY += playerSpeed;			
-		}
-		if(keyHandler.leftPressed == true) {
-			playerX -= playerSpeed;
-		}
-		if(keyHandler.rightPressed == true) {
-			playerX += playerSpeed;
-		}		
 	}	
 	
 	@Override
@@ -102,9 +101,18 @@ public class GamePanel extends JPanel implements Runnable {
 		
 		super.paintComponent(g);
 		Graphics2D g2 = (Graphics2D) g;
-		g2.setColor(Color.white);
-		g2.fillRect(playerX, playerY, sprite_size, sprite_size);
+		player.draw(g2);
 		g2.dispose();
+		
+	}
+	public void GameClose() {
+		// here we draw the closing screen and wait
+		// maybe we wait for an button press of the user
+
+		
+		System.out.println("EXIT CODE: '0'");
+
+		System.exit(0);
 		
 	}
 }
